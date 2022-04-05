@@ -1,0 +1,29 @@
+<odoo>
+    <!-- Form View -->
+    <record id="view_company_form" model="ir.ui.view">
+        <field name="name">res.company.form</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+            <notebook position="inside">
+                <page name="agreement_info" string="Agreement Info" groups="agreement_legal.group_agreement_readonly">
+                    <group>
+                        <group>
+                            <field name="market_name"/>
+                            <field name="market_type"/>
+                            <field name="market_address"/>
+                            <field name="company_phone" string="Phone"/>
+                        </group>
+                        <group>
+                            <field name="show_invoice_date"/>
+                        </group>
+                    </group>
+                </page>
+            </notebook>
+
+            <field name="phone" position="after">
+                <field name="fax"/>
+            </field>
+        </field>
+    </record>
+</odoo>

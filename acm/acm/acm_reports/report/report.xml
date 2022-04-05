@@ -1,0 +1,87 @@
+<odoo>
+
+    <report
+        id="action_report_rental_collection"
+        model="rental.collect.report.wizard"
+        string="Rental Collection Form"
+        report_type="qweb-pdf"
+        name="acm.report_rental_collection"
+        file="acm.report_rental_collection"
+        print_report_name="'Rental Collection'"
+        paperformat="acm.report_paperformat_rental_collect"
+        menu="False"/>
+
+    <report
+        id="action_report_payment_voucher"
+        model="account.invoice"
+        string="Voucher ACM"
+        report_type="qweb-pdf"
+        name="acm.report_payment_voucher"
+        file="acm.report_payment_voucher"
+        print_report_name="'Voucher_ACM - %s' %object.number"/>
+
+    <!-- Receipt Form -->
+    <report
+        id="action_report_receipt_acm"
+        model="account.invoice"
+        string="Receipt ใบเสร็จรับเงิน/ใบแทนใบเสร็จรับเงิน"
+        report_type="qweb-pdf"
+        name="acm.report_receipt_acm"
+        file="acm.report_receipt_acm"
+        print_report_name="'Receipt_ACM - %s' %object.number"
+        paperformat="acm.report_paperformat_receipt_acm"/>
+
+    <!-- Receipt/Tax Invoice (ABB) -->
+    <report
+        id="action_report_receipt_tax_invoice_abb_acm"
+        model="account.invoice"
+        string="Receipt/Tax Invoice (ABB) ACM"
+        report_type="qweb-pdf"
+        name="acm.report_receipt_tax_invoice_abb_acm"
+        file="acm.report_receipt_tax_invoice_abb_acm"
+        print_report_name="'Receipt_ACM - %s' %object.number"
+        paperformat="acm.report_paperformat_receipt_acm"/>
+
+    <!-- Receipt/Tax Invoice -->
+    <report
+        id="action_report_receipt_tax_invoice_acm"
+        model="account.invoice"
+        string="Receipt/Tax Invoice ACM"
+        report_type="qweb-pdf"
+        name="acm.report_receipt_tax_invoice_acm"
+        file="acm.report_receipt_tax_invoice_acm"
+        print_report_name="'Receipt_ACM - %s' %object.number"
+        paperformat="acm.report_paperformat_receipt_acm"/>
+
+    <!-- Tax Invoice (ABB) -->
+    <report
+        id="action_report_tax_invoice_abb_acm"
+        model="account.invoice"
+        string="Tax Invoice (ABB) ACM"
+        report_type="qweb-pdf"
+        name="acm.report_tax_invoice_abb_acm"
+        file="acm.report_tax_invoice_abb_acm"
+        print_report_name="'Tax_Invoice_ABB_ACM - %s' %object.number"
+        paperformat="acm.report_paperformat_receipt_acm"/>
+
+    <!-- Multiday Receipt -->
+    <report
+        id="action_report_multiday_receipt"
+        model="account.payment"
+        string="MultiDay_Receipt ใบเสร็จรับเงินหลายวัน"
+        report_type="qweb-pdf"
+        name="acm.report_multiday_receipt"
+        file="acm.report_multiday_receipt"
+        menu="True"
+    />
+    <report
+        id="action_report_multi_day_receipt"
+        model="account.payment"
+        string="ใบเสร็จรับเงินหลายวัน"
+        report_type="qweb-pdf"
+        name="acm.report_multi_day_receipt"
+        file="acm.report_multi_day_receipt"
+        menu="True"
+    />
+
+</odoo>

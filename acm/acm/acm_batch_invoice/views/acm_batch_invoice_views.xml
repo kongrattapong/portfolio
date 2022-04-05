@@ -1,0 +1,129 @@
+<odoo>
+
+    <record id="acm_batch_invoice_view_form" model="ir.ui.view">
+        <field name="name">acm.batch.invoice.form</field>
+        <field name="model">acm.batch.invoice</field>
+        <field name="arch" type="xml">
+            <form string="Batch Invoices">
+                <header>
+                    <field name="state" widget="statusbar" nolabel="1" statusbar_visible="draft,confirm,done"/>
+                    <button name="button_confirm" string="Confirm" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <button name="%(action_batch_invoice)d" string="Create Invoice" type="action" class="oe_highlight"
+                      attrs="{'invisible': [('state', '!=', 'confirm')]}" context="{'default_date_invoice': date_invoice}"/>
+                    <button name="button_set_to_draft" string="Set to draft" type="object" attrs="{'invisible': [('state', '!=', 'confirm')]}"/>
+                </header>
+                <sheet string="Invoice">
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" name="action_view_invoice" type="object" icon="fa-pencil-square-o"
+                            attrs="{'invisible': [('invoice_count', '=', False)]}">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="invoice_count" widget="statinfo" nolabel="1" class="mr4"/>
+                                </span>
+                                <span class="o_stat_text">Invoices</span>
+                            </div>
+                        </button>
+                    </div>
+                    <h1>
+                        <label for="name" string="Draft Batch Invoice" attrs="{'invisible': [('state','!=', 'draft')]}"/>
+                        <field name="name" readonly="1" class="oe_inline" attrs="{'invisible': [('state', '=', 'draft')]}"/>
+                    </h1>
+                    <group>
+                        <group>
+                            <field name="date_range_id"/>
+                            <field name="group_id"/>
+                        </group>
+                        <group>
+                            <field name="date_invoice"/>
+                        </group>
+                    </group>
+                    <button name="retriveve_product_line" string="Retrieve Meter Lines"
+                            type="object" class="oe_highlight" states="draft"/>
+                    <notebook>
+                        <page string="Meter Lines">
+                            <field name="batch_invoice_line_ids">
+                                <tree name="batch_invoice" create="0" editable="bottom">
+                                    <field name="lock_number"/>
+                                    <field name="contract_id" invisible="1"/>
+                                    <field name="partner_id"/>
+                                    <field name="flat_rate" sum="Total Amount"/>
+                                    <field name="electric_to"/>
+                                    <field name="electric_from"/>
+                                    <field name="electric_amount" sum="Total Amount"/>
+                                    <field name="electric_to_2"/>
+                                    <field name="electric_from_2"/>
+                                    <field name="electric_amount_2" sum="Total Amount"/>
+                                    <field name="water_to"/>
+                                    <field name="water_from"/>
+                                    <field name="water_amount" sum="Total Amount"/>
+                                    <field name="invoice_id"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Others" groups="base.group_no_one">
+                            <group>
+                                <group>
+                                    <field name="water_product_id"/>
+                                    <field name="electric_product_id"/>
+                                </group>
+                                <group>
+                                    <field name="invoice_type"/>
+                                    <field name="journal_id"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="acm_batch_invoice_view_tree" model="ir.ui.view">
+        <field name="name">acm.batch.invoice.tree</field>
+        <field name="model">acm.batch.invoice</field>
+        <field name="arch" type="xml">
+            <tree string="Batch Invoices" default_order="group_id">
+                <field name="group_id"/>
+                <field name="name"/>
+                <field name="date_range_id"/>
+                <field name="date_invoice"/>
+                <field name="state"/>
+            </tree>
+      </field>
+    </record>
+
+    <record id="acm_batch_invoice_action_form" model="ir.actions.act_window">
+        <field name="name">Batch Invoices</field>
+        <field name="res_model">acm.batch.invoice</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="batch_invoice_search_view" model="ir.ui.view">
+        <field name="name">Batch Invoice Search</field>
+        <field name="model">acm.batch.invoice</field>
+        <field name="arch" type="xml">
+            <search string="Batch Invoice Search">
+                <field name="name" string="Batch Number"/>
+                <field name="group_id" string="Zone"/>
+                <field name="date_range_id" string="Date Range"/>
+                <filter string="Draft" domain="[('state','=','draft')]" name="state_draft_filter"/>
+                <filter string="Confirmed" domain="[('state','=','confirm')]" name="state_confirm_filter"/>
+                <filter string="Invoiced" domain="[('state','=','done')]" name="state_done_filter"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_partner_id" string="Zone" context="{'group_by':'group_id'}"/>
+                    <filter name="group_partner_id" string="Date Range" context="{'group_by':'date_range_id'}"/>
+                    <filter name="group_date" string="Invoice Date" context="{'group_by':'date_invoice'}"/>
+                    <filter name="group_state" string="State" context="{'group_by':'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <menuitem
+        name="Batch Invoice"
+        id="batch_invoice_menu"
+        sequence="16"
+        parent="account.menu_finance_receivables"
+        action="acm_batch_invoice_action_form"/>
+
+</odoo>

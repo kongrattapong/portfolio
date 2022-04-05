@@ -1,0 +1,259 @@
+<odoo>
+    <!-- Form View -->
+    <record id="partner_agreement_form_view" model="ir.ui.view">
+        <field name="name">Agreement Form</field>
+        <field name="model">agreement</field>
+        <field name="inherit_id" ref="agreement_legal.partner_agreement_form_view"/>
+        <field name="arch" type="xml">
+            <!-- Not use state_id -->
+            <field name="state" position="replace"/>
+            <field name="stage_id" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+            <!-- -->
+            <form position="attributes">
+                <attribute name="delete">0</attribute>
+                <attribute name="duplicate">0</attribute>
+            </form>
+            <button name="create_new_agreement" position="after">
+                <button name="active_statusbar" string="Active" type="object" class="oe_highlight" confirm="Are you sure to active this agreement ?" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                <button name="create_new_contract" string="New Contract" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('is_template', '=', True), '|', ('is_contract_create', '=', True), ('state', '!=', 'active')]}"/>
+                <button name="%(agreement_extension_action)d" string="Renew" type="action" class="oe_highlight" attrs="{'invisible': ['|', ('is_template', '=', True), '|', ('is_contract_create', '=', False), '|', ('state', '!=', 'active'), '|', ('is_transfer', '=', True), ('is_terminate', '=', True)]}"/>
+                <button name="%(agreement_transfer_action)d" string="Transfer" type="action" class="oe_highlight" attrs="{'invisible': ['|', ('is_template', '=', True), '|', ('is_contract_create', '=', False), '|', ('state', '!=', 'active'), '|', ('is_transfer', '=', True), ('is_terminate', '=', True)]}"/>
+                <button name="%(agreement_breach_action)d" string="Breach" type="action" class="oe_highlight" context="{'breach': True}" attrs="{'invisible': ['|', ('is_template', '=', True), '|', ('is_contract_create', '=', False), '|', ('state', '!=', 'active'), '|', ('is_breach', '=', True), '|', ('is_transfer', '=', True), ('is_terminate', '=', True)]}"/>
+                <button name="%(agreement_breach_action)d" string="Cancel Breach" type="action" class="oe_highlight" context="{'breach': False}" attrs="{'invisible': ['|', ('is_template', '=', True), '|', ('is_contract_create', '=', False), '|', ('state', '!=', 'active'), '|', ('is_breach', '=', False), '|', ('is_transfer', '=', True), ('is_terminate', '=', True)]}"/>
+                <button name="%(agreement_terminate_action)d" string="Termination" type="action" class="oe_highlight" attrs="{'invisible': ['|', ('is_template', '=', True), '|', ('is_contract_create', '=', False), '|', ('state', '!=', 'active'), '|', ('is_transfer', '=', True), ('is_terminate', '=', True)]}"/>
+                <button name="%(agreement_inactive_action)d" string="Inactive" type="action" class="oe_highlight" attrs="{'invisible': [('state', 'not in', ['draft', 'active'])]}"/>
+                <field name="state" widget="statusbar"/>
+            </button>
+            <div name="button_box" position="inside">
+                <button name="action_view_contract"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-book"
+                    attrs="{'invisible': [('contract_count', '=', 0)]}">
+                    <field name="contract_count" widget="statinfo" string="Contracts"/>
+                </button>
+            </div>
+            <field name="is_template" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </field>
+            <field name="end_date" position="after">
+                <field name="date_contract" attrs="{'invisible': [('is_template', '=', True)], 'required': [('is_template', '=', False)]}"/>
+                <label for="recurring_interval" attrs="{'invisible': [('is_template', '=', True)], 'required': [('is_template', '=', False)]}"/>
+                <div attrs="{'invisible': [('is_template', '=', True)], 'required': [('is_template', '=', False)]}">
+                    <field name="recurring_interval" class="oe_inline"/>
+                    <field name="recurring_rule_type" class="oe_inline"/>
+                </div>
+            </field>
+            <field name="termination_date" position="attributes">
+                <attribute name="readonly">True</attribute>
+                <attribute name="attrs">{'invisible': [('termination_date', '=', False)]}</attribute>
+            </field>
+            <field name="termination_requested" position="attributes">
+                <attribute name="readonly">True</attribute>
+                <attribute name="invisible">True</attribute>
+            </field>
+            <field name="termination_date" position="after">
+                <field name="termination_by" readonly="True" attrs="{'invisible': [('termination_by', '=', False)]}"/>
+                <field name="reason_termination" readonly="True" attrs="{'invisible': [('reason_termination', '=', False)]}"/>
+            </field>
+            <field name="partner_id" position="attributes">
+                <attribute name="attrs">{'required': [('is_template', '=', False)]}</attribute>
+            </field>
+            <field name="uom_id" position="after">
+                <field name="lst_price"/>
+            </field>
+            <xpath expr="//field[@name='line_ids']/tree/field[@name='name']" position="after">
+                <field name="manual"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+            </xpath>
+            <notebook position="inside">
+                <page name="breach" string="Breach" attrs="{'invisible': [('breach_line_ids', '=', [])]}">
+                    <field name="breach_line_ids">
+                        <tree editable="bottom" create="0" delete="0">
+                            <field name="date_breach" readonly="1"/>
+                            <field name="breach_type_id" readonly="1"/>
+                            <field name="reason_breach" readonly="1"/>
+                            <field name="date_cancel_breach" readonly="1"/>
+                            <field name="reason_cancel_breach" readonly="1"/>
+                        </tree>
+                    </field>
+                </page>
+            </notebook>
+            <xpath expr="//sheet/group[1]/group[2]" position="inside">
+                <field name="is_contract_create" invisible="1"/>
+                <field name="contract_type"/>
+                <field name="template_id" readonly="True" attrs="{'invisible': [('is_template', '=', True)]}"/>
+                <field name="is_breach" readonly="True" attrs="{'invisible': [('is_breach', '=', False)]}"/>
+                <field name="is_transfer" attrs="{'invisible': [('is_transfer', '=', False)]}"/>
+                <field name="is_terminate" attrs="{'invisible': [('is_terminate', '=', False)]}"/>
+                <field name="inactive_reason" readonly="True" attrs="{'invisible': [('state', '!=', 'inactive')]}"/>
+                <field name="invoice_id" readonly="True" attrs="{'invisible': [('invoice_id', '=', False)]}"/>
+                <field name="move_id" readonly="True" attrs="{'invisible': [('move_id', '=', False)]}"/>
+            </xpath>
+            <xpath expr="//page[@name='products']/field/tree" position="attributes">
+                <attribute name="editable">buttom</attribute>
+            </xpath>
+            <group name="partner" position="attributes">
+                <attribute name="string">Lessee</attribute>
+            </group>
+            <group name="company" position="attributes">
+                <attribute name="string">Lessor</attribute>
+            </group>
+            <xpath expr="//page[@name='signature']/group[1]/group[1]" position="attributes">
+                <attribute name="string">Lessee</attribute>
+            </xpath>
+            <xpath expr="//page[@name='signature']/group[1]/group[2]" position="attributes">
+                <attribute name="string">Lessor</attribute>
+            </xpath>
+            <field name="assigned_user_id" position="attributes">
+                <attribute name="attrs">{'invisible': [('is_template', '=', True)], 'readonly':['|', ('is_template', '=', True), ('state', '=', 'active')]}</attribute>
+            </field>
+            <group name="termdates_left" position="after">
+                <field name="show_invoice_date" invisible="1"/>
+                <group string="Invoice Info" attrs="{'invisible': ['|', '|', ('show_invoice_date', '=', False), ('is_template', '=', True), ('recurring_rule_type', '!=', 'monthly')]}">
+                    <field name="invoice_date_days" attrs="{'required': [('show_invoice_date', '=', True), ('is_template', '=', False), ('recurring_rule_type', '=', 'monthly')]}"/>
+                    <label for="agreement_invoice_line" string=""/>
+                    <field name="agreement_invoice_line" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="number"/>
+                            <field name="date_invoice"/>
+                        </tree>
+                    </field>
+                </group>
+            </group>
+            <!-- Make sure for no error 'Unknown field state in domain' in the agreement -->
+            <xpath expr="//field[@name='child_agreements_ids']/tree" position="inside">
+                <field name="state" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='previous_version_agreements_ids']/tree" position="inside">
+                <field name="state" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Tree View -->
+    <record id="partner_agreement_list_view" model="ir.ui.view">
+        <field name="name">Agreement List</field>
+        <field name="model">agreement</field>
+        <field name="inherit_id" ref="agreement_legal.partner_agreement_list_view"/>
+        <field name="arch" type="xml">
+            <tree position="attributes">
+                <attribute name="delete">0</attribute>
+            </tree>
+            <field name="name" position="attributes">
+                <attribute name="invisible">not context.get('default_is_template', False)</attribute>
+            </field>
+            <field name="partner_id" position="before">
+                <field name="group_id" invisible="context.get('default_is_template', False)"/>
+                <field name="subzone" invisible="context.get('default_is_template', False)"/>
+                <field name="rent_product_id" invisible="context.get('default_is_template', False)"/>
+            </field>
+            <field name="company_id" position="attributes">
+                <attribute name="invisible">not context.get('default_is_template', False)</attribute>
+            </field>
+            <field name="parent_agreement_id" position="attributes">
+                <attribute name="invisible">not context.get('default_is_template', False)</attribute>
+            </field>
+            <field name="parent_agreement_id" position="after">
+                <field name="start_date" invisible="context.get('default_is_template', False)"/>
+                <field name="end_date"  invisible="context.get('default_is_template', False)"/>
+                <field name="expiry_time" invisible="context.get('default_is_template', False)"/>
+            </field>
+            <field name="agreement_type_id" position="attributes">
+                <attribute name="invisible">not context.get('default_is_template', False)</attribute>
+            </field>
+            <field name="agreement_subtype_id" position="attributes">
+                <attribute name="invisible">not context.get('default_is_template', False)</attribute>
+            </field>
+            <field name="agreement_subtype_id" position="after">
+                <field name="state"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="action_termination_work" model="ir.actions.act_window">
+        <field name="name">Termination Works</field>
+        <field name="res_model">agreement</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">['|', '|', ('is_terminate', '=', True), ('is_transfer', '=', True), ('end_date','&lt;',time.strftime('%Y-%m-%d')), ('state', '=', 'active')]</field>
+    </record>
+
+    <!-- Graph View -->
+    <record id="agreement_graph_view" model="ir.ui.view">
+        <field name="name">agreement.graph</field>
+        <field name="model">agreement</field>
+        <field name="inherit_id" ref="agreement_legal.agreement_graph_view"/>
+        <field name="arch" type="xml">
+            <field name="stage_id" position="replace"/>
+            <graph position="inside">
+                <field name="state" type="row"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Pivot View -->
+    <record id="agreement_pivot_view" model="ir.ui.view">
+        <field name="name">agreement.pivot</field>
+        <field name="model">agreement</field>
+        <field name="inherit_id" ref="agreement_legal.agreement_pivot_view"/>
+        <field name="arch" type="xml">
+            <field name="stage_id" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+            <field name="stage_id" position="after">
+                <field name="state" type="row"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record model="ir.ui.view" id="partner_agreement_search_view">
+        <field name="name">Agreement Search</field>
+        <field name="model">agreement</field>
+        <field name="inherit_id" ref="agreement_legal.partner_agreement_search_view"/>
+        <field name="arch" type="xml">
+            <field name="name" position="before">
+                <field name="group_id"/>
+                <field name="line_ids" string="Product" filter_domain="[('line_ids.product_id', 'ilike', self)]"/>
+            </field>
+            <filter name="group_partner_id" position="before">
+                <filter name="group_group_id" string="Zone" icon="terp-partner" context="{'group_by':'group_id'}"/>
+            </filter>
+            <filter name="filter_templates" position="after">
+                <separator/>
+                <filter name="filter_active_current" string="Active Current" domain="[('state', '=', 'active'), ('start_date','&lt;=', time.strftime('%Y-%m-%d'))]"/>
+                <filter name="filter_no_active_current" string="No Active Current" domain="[('state', 'in', ['draft', 'active']), ('start_date','&gt;', time.strftime('%Y-%m-%d'))]"/>
+            </filter>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="agreement_legal.partner_agreement_agreement_templates" model="ir.actions.act_window">
+        <field name="context">{'default_is_template': True}</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <record id="agreement_legal.agreement_operations_agreement" model="ir.actions.act_window">
+        <field name="context">{'default_is_template': False}</field>
+        <field name="search_view_id" ref="agreement_legal.partner_agreement_search_view"/>
+    </record>
+
+    <!-- Menu -->
+    <record id="agreement_legal.agreement_dashboard" model="ir.ui.menu">
+        <field name="active">False</field>
+    </record>
+    <record id="agreement.agreement_menu" model="ir.ui.menu">
+        <field name="action" ref="agreement_legal.agreement_operations_agreement"/>
+        <field name="sequence">2</field>
+    </record>
+
+    <menuitem
+      name="Termination Works"
+      action="action_termination_work"
+      id="menu_action_termination_work"
+      parent="agreement_legal.agreement_operations"
+      sequence="30"/>
+</odoo>

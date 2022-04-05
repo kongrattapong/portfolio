@@ -1,0 +1,57 @@
+<odoo>
+    <!-- Form View -->
+    <record id="agreement_terminate_view_form" model="ir.ui.view">
+        <field name="name">agreement.terminate.view.form</field>
+        <field name="model">agreement.terminate</field>
+        <field name="arch" type="xml">
+            <form string="Terminate Agreement">
+                <group string="Agreement">
+                    <group>
+                        <field name="termination_by"/>
+                        <field name="date_termination"/>
+                        <field name="refund_deposit_type"/>
+                        <field name="is_attachment"/>
+                    </group>
+                    <group>
+                        <field name="reason_termination"/>
+                    </group>
+                </group>
+                <p attrs="{'invisible': [('refund_deposit_type', '!=', 'refund_deposit')]}" style="color: red;">Create vendor bill for refund security deposit.</p>
+                <p attrs="{'invisible': [('refund_deposit_type', '!=', 'no_refund_deposit')]}" style="color: red;">Create journal entries for no refund security deposit.</p>
+                <group string="Refund Security Deposit" attrs="{'invisible': [('refund_deposit_type', 'not in', ['refund_deposit', 'no_refund_deposit'])]}">
+                    <group>
+                        <field name="product_id" attrs="{'required': [('refund_deposit_type', 'in', ['refund_deposit', 'no_refund_deposit'])]}" options="{'no_create': True, 'no_open': True}"/>
+                        <field name="amount" attrs="{'required': [('refund_deposit_type', 'in', ['refund_deposit', 'no_refund_deposit'])]}"/>
+                    </group>
+                    <group>
+                        <field name="date_invoice" attrs="{'required': [('refund_deposit_type', 'in', ['refund_deposit', 'no_refund_deposit'])]}"/>
+                        <field name="journal_id" attrs="{'required': [('refund_deposit_type', 'in', ['refund_deposit', 'no_refund_deposit'])]}" options="{'no_create': True, 'no_open': True}"/>
+                        <field name="ref" attrs="{'invisible': [('refund_deposit_type', '!=', 'no_refund_deposit')]}"/>
+                        <field name="description" attrs="{'required': [('refund_deposit_type', '=', 'refund_deposit')], 'invisible': [('refund_deposit_type', '!=', 'refund_deposit')]}"/>
+                    </group>
+                </group>
+                <group string="Attachment" attrs="{'invisible': [('is_attachment', '=', False)]}">
+                    <field name="attachment_ids" nolabel="1">
+                        <tree editable="top">
+                            <field name="file" filename="filename"/>
+                            <field name="filename" readonly="1" force_save="1"/>
+                        </tree>
+                    </field>
+                </group>
+                <footer>
+                    <button name="action_terminate_agreement" string="Confirm" type="object" default_focus="1" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="agreement_terminate_action" model="ir.actions.act_window">
+        <field name="name">Terminate Agreement</field>
+        <field name="res_model">agreement.terminate</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

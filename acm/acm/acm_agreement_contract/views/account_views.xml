@@ -1,0 +1,63 @@
+<odoo>
+    <!-- Form View -->
+    <record id="invoice_form" model="ir.ui.view">
+        <field name="name">account.invoice.form</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.invoice_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/group[1]/group[2]" position="inside">
+                <field name="type2" required="True"/>
+                <field name="is_merge" attrs="{'invisible': [('is_merge', '=', False)]}"/>
+            </xpath>
+            <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='account_analytic_id']" position="after">
+                <field name="group_id"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_move_form" model="ir.ui.view">
+        <field name="name">account.move.form</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='line_ids']/tree/field[@name='analytic_account_id']" position="after">
+                <field name="group_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Tree View -->
+    <record id="invoice_tree" model="ir.ui.view">
+        <field name="name">account.invoice.tree</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.invoice_tree"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="before">
+                <field name="type2"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_account_invoice_filter" model="ir.ui.view">
+        <field name="name">account.invoice.select</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+        <field name="arch" type="xml">
+            <field name="number" position="before">
+                <field name="groups"/>
+                <field name="invoice_line_ids" string="Product" filter_domain="[('invoice_line_ids.product_id', 'ilike', self)]"/>
+                <field name="invoice_line_ids" string="Description" filter_domain="[('invoice_line_ids.name', 'ilike', self)]"/>
+            </field>
+            <filter name="group_by_partner_id" position="before">
+                <filter name="group_by_type2" string="Invoice Type" context="{'group_by':'type2'}"/>
+                <filter name="group_by_groups" string="Zone" context="{'group_by':'groups'}"/>
+            </filter>
+        </field>
+    </record>
+
+    <!-- Change Invoicing to Accounting Menu -->
+    <record id="account.menu_finance" model="ir.ui.menu">
+        <field name="name">Accounting</field>
+        <field name="sequence">4</field>
+    </record>
+</odoo>

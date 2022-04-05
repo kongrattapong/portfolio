@@ -1,0 +1,92 @@
+<odoo>
+    <!-- Form View -->
+    <record id="product_template_form_view" model="ir.ui.view">
+        <field name="name">product.template.common.form</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <page name="general_information" position="before">
+                <page name="agreement_info" string="Agreement Info" groups="agreement_legal.group_agreement_readonly">
+                    <group>
+                        <group>
+                            <field name="manual"/>
+                            <field name="width" attrs="{'invisible': [('manual', '=', True)]}"/>
+                            <field name="length1" attrs="{'invisible': [('manual', '=', True)]}"/>
+                            <field name="area" attrs="{'readonly': [('manual', '=', False)]}" force_save="1"/>
+                        </group>
+                        <group>
+                            <field name="value_type"/>
+                            <field name="lock_attribute"/>
+                            <field name="group_id" attrs="{'required': [('value_type', '=', 'rent')]}"/>
+                            <field name="subzone"/>
+                            <field name="lock_number" attrs="{'required': [('value_type', '=', 'rent')]}"/>
+                        </group>
+                    </group>
+                </page>
+            </page>
+        </field>
+    </record>
+    <record id="product_template_only_form_view" model="ir.ui.view">
+        <field name="name">product.template.product.form</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <field name="area" position="after">
+                <field name="working_hours_id" context="{'default_type': 'in_time'}" attrs="{'invisible': [('product_variant_count', '>', 1)]}"/>
+                <field name="working_hours2_id" context="{'default_type': 'out_time'}" attrs="{'invisible': [('product_variant_count', '>', 1)]}"/>
+            </field>
+            <field name="value_type" position="after">
+                <field name="goods_category_id" attrs="{'invisible': [('product_variant_count', '>', 1)]}"/>
+                <field name="goods_type" attrs="{'invisible': [('product_variant_count', '>', 1)]}"/>
+            </field>
+        </field>
+    </record>
+    <record id="product_normal_form_view" model="ir.ui.view">
+        <field name="name">product.product.form</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+            <field name="area" position="after">
+                <field name="working_hours_id" context="{'default_type': 'in_time'}"/>
+                <field name="working_hours2_id" context="{'default_type': 'out_time'}"/>
+            </field>
+            <field name="value_type" position="after">
+                <field name="goods_category_id"/>
+                <field name="goods_type"/>
+            </field>
+        </field>
+    </record>
+    <record id="product_variant_easy_edit_view" model="ir.ui.view">
+        <field name="name">product.product.view.form.easy</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_variant_easy_edit_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <group>
+                    <group name="agreement_info" string="Agreement Info">
+                        <field name="goods_category_id"/>
+                        <field name="goods_type"/>
+                        <field name="working_hours_id" context="{'default_type': 'in_time'}"/>
+                        <field name="working_hours2_id" context="{'default_type': 'out_time'}"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="product_template_search_view" model="ir.ui.view">
+        <field name="name">product.template.search</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view"/>
+        <field name="arch" type="xml">
+            <field name="name" position="before">
+                <field name="group_id"/>
+            </field>
+            <xpath expr="//search" position="inside">
+                <filter name="group_group_id" string="Zone" icon="terp-partner" context="{'group_by':'group_id'}"/>
+                <filter name="group_value_type" string="Value Type" icon="terp-partner" context="{'group_by':'value_type'}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
